@@ -1,8 +1,11 @@
 package com.example.demo.controller;
 
 import com.example.demo.exceptions.NotFoundException;
+import com.example.demo.model.Payment;
 import com.example.demo.model.UserModel;
 import com.example.demo.repositories.UserRepository;
+import com.example.demo.service.ResponseObject;
+import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,12 +41,19 @@ public class UserController {
     public ResponseEntity<UserModel> updateUser(@PathVariable(value = "id") String id,
                                            @RequestBody UserModel userDetails) throws NotFoundException {
         UserModel user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User Not Found"));
-        user.setFirstName(userDetails.getFirstName());
-        user.setLastName(userDetails.getLastName());
-        user.setDob(userDetails.getDob());
+        user = new UserService().editUser(user);
 
         userRepository.save(user);
         return ResponseEntity.ok().body(user);
+    }
+
+
+    @GetMapping("/get-response")
+    public ResponseEntity<ResponseObject> postResponse(String message, String status, Object object){
+
+        ResponseObject obj = new ResponseObject("Hello", "200", new Payment("1", "Wire_Transfer", 10000, "Waliul", "Hasnat"));
+
+        return ResponseEntity.ok().body(obj);
     }
 
 
